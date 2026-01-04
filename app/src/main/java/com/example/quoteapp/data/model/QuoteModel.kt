@@ -4,7 +4,8 @@ data class QuoteModel(
     val id: Int,
     val text: String,
     val author: String,
-    val category: QuoteCategory
+    val category: QuoteCategory,
+    var isFavorite :Boolean = false
 )
 
 enum class QuoteCategory {

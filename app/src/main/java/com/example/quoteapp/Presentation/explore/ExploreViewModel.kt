@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 
 class ExploreViewModel(
-    private val repository: QuoteRepository = QuoteRepositoryImpl()
+    private val repository: QuoteRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ExploreUiState())

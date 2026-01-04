@@ -29,8 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.quoteapp.Presentation.home.HomeViewModel
+import com.example.quoteapp.Presentation.home.HomeViewModelFactory
 import com.example.quoteapp.data.model.QuoteCategory
 import com.example.quoteapp.data.model.QuoteModel
+import com.example.quoteapp.domain.repository.QuoteRepository
 import com.example.quoteapp.ui.theme.Bold35
 import com.example.quoteapp.ui.theme.DarkRedBurgundy
 import com.example.quoteapp.ui.theme.DarkRedMaroon
@@ -38,8 +41,13 @@ import com.example.quoteapp.ui.theme.Normal12
 
 @Composable
 fun ExploreScreen(
-    viewModel: ExploreViewModel = viewModel()
+    repository: QuoteRepository
 ) {
+
+    val viewModel: ExploreViewModel = viewModel(
+        factory = ExploreViewModelFactory(repository)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
 
     LazyColumn(

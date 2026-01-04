@@ -48,6 +48,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.quoteapp.data.model.QuoteCategoryModel
 import com.example.quoteapp.data.model.QuoteModel
 import com.example.quoteapp.data.source.BannerData
+import com.example.quoteapp.domain.repository.QuoteRepository
 import com.example.quoteapp.ui.theme.Bold35
 import com.example.quoteapp.ui.theme.Medium14
 
@@ -66,8 +67,11 @@ val gradientList = listOf(
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToExplore: () -> Unit,
-    viewModel: HomeViewModel = viewModel()
+    repository: QuoteRepository
 ) {
+    val viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(repository)
+    )
 
     val state = viewModel.uiState.collectAsState().value
 
@@ -117,7 +121,11 @@ fun HomeScreen(
 
                     QuotesCard(
                         quoteModel = state.latestQuotes[index],
-                        backgroundColors = listOf(top, bottom)
+                        backgroundColors = listOf(top, bottom),
+                        onHeartClick = {
+                            viewModel.onHeartClick(state.latestQuotes[index])
+                        }
+
                     )
                 }
             }
@@ -165,7 +173,11 @@ fun HomeScreen(
 
                     TrendingQuotesCard(
                         trendingquoteModel = state.trendingQuotes[index],
-                        backgroundColors = listOf(top, bottom)
+                        backgroundColors = listOf(top, bottom),
+                        onHeartClick = {
+                            viewModel.onHeartClick(state.trendingQuotes[index])
+                        }
+
                     )
                 }
             }
@@ -230,7 +242,8 @@ fun QuotesCategoryCard(
 fun QuotesCard(
     modifier: Modifier = Modifier,
     quoteModel: QuoteModel,
-    backgroundColors: List<Color>
+    backgroundColors: List<Color>,
+    onHeartClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -251,7 +264,18 @@ fun QuotesCard(
                 SpacerWeight1f()
                 Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
                 Spacer(modifier = Modifier.width(8.dp))
-                Icon(Icons.Default.FavoriteBorder, contentDescription = "Fav", tint = Color.White)
+                Icon(
+                    imageVector = if (quoteModel.isFavorite)
+                        Icons.Default.Favorite
+                    else
+                        Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    tint = Color.White,
+                    modifier = Modifier.clickable {
+                        onHeartClick()
+                    }
+                )
+
             }
 
             SpacerWeight1f()
@@ -280,7 +304,8 @@ fun QuotesCard(
 fun TrendingQuotesCard(
     modifier: Modifier = Modifier,
     trendingquoteModel: QuoteModel,
-    backgroundColors: List<Color>
+    backgroundColors: List<Color>,
+    onHeartClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -301,7 +326,18 @@ fun TrendingQuotesCard(
                 SpacerWeight1f()
                 Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
                 Spacer(modifier = Modifier.width(8.dp))
-                Icon(Icons.Default.FavoriteBorder, contentDescription = "Fav", tint = Color.White)
+                Icon(
+                    imageVector = if (trendingquoteModel.isFavorite)
+                        Icons.Default.Favorite
+                    else
+                        Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    tint = Color.White,
+                    modifier = Modifier.clickable {
+                        onHeartClick()
+                    }
+                )
+
             }
 
             SpacerWeight1f()

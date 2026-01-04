@@ -1,22 +1,32 @@
 package com.example.quoteapp.Presentation.saved
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.quoteapp.Presentation.home.QuotesCard
+import com.example.quoteapp.Presentation.home.gradientList
+import com.example.quoteapp.data.repository.QuoteRepositoryImpl
+import com.example.quoteapp.domain.repository.QuoteRepository
 
 @Composable
-fun SavedScreen() {
+fun SavedScreen(
+    repository: QuoteRepository
+) {
+    val viewModel: SavedViewModel = viewModel(
+        factory = SavedViewModelFactory(repository)
+    )
+    val quotes = viewModel.savedQuotes.collectAsState().value
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .background(Color.Yellow.copy(0.4f))
-    ){
-        Text(text = "Saved Screen")
-
-
+    LazyColumn {
+        items(quotes.size) { index ->
+            QuotesCard(
+                quoteModel = quotes[index],
+                backgroundColors = gradientList.shuffled().take(2),
+                onHeartClick = {
+                    viewModel.onHeartClick(quotes[index])
+                }
+            )
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.quoteapp.Presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quoteapp.data.model.QuoteModel
 import com.example.quoteapp.data.repository.QuoteRepositoryImpl
 import com.example.quoteapp.domain.repository.QuoteRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,17 +11,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val repository: QuoteRepository = QuoteRepositoryImpl()
-): ViewModel() {
+    private val repository: QuoteRepository
+) : ViewModel() {
 
-    private val _uiState=MutableStateFlow(HomeUiState())
+    private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    init{
+    init {
         loadHomeData()
     }
 
-    private fun loadHomeData(){
+    private fun loadHomeData() {
 
         viewModelScope.launch {
 
@@ -38,6 +39,29 @@ class HomeViewModel(
 
     }
 
+    fun onHeartClick(quote: QuoteModel) {
+        viewModelScope.launch {
+            repository.toggleFavourite(quote)
+
+            _uiState.value = _uiState.value.copy(
+                latestQuotes = _uiState.value.latestQuotes.map {
+                    if (it.id == quote.id) {
+                        it.copy(isFavorite = !it.isFavorite)
+                    } else {
+                        it
+                    }
+                },
+                trendingQuotes=_uiState.value.trendingQuotes.map{
+                    if(it.id==quote.id){
+                        it.copy(isFavorite = !it.isFavorite)
+                    }else{
+                        it
+                    }
+                }
+            )
+
+        }
+    }
 
 
 }
